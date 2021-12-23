@@ -1333,23 +1333,9 @@ void QgsVectorLayerProperties::saveMultipleStylesAs()
 
             QgsVectorLayerSaveStyleDialog::SaveToDbSettings dbSettings = dlg.saveToDbSettings();
 
-            // If a name is defined, we add _1 etc. else we use the style name
+            // If a name is defined, we add styleName to the name else we just use the style name
             QString name { dbSettings.name };
-            if ( name.isEmpty() )
-            {
-              name = styleName;
-            }
-            else
-            {
-              QStringList ids, names, descriptions;
-              mLayer->listStylesInDatabase( ids, names, descriptions, msgError );
-              int i = 1;
-              while ( names.contains( name ) )
-              {
-                name = QStringLiteral( "%1 %2" ).arg( name ).arg( QString::number( i ) );
-                i++;
-              }
-            }
+            name.isEmpty() ? name = styleName : name = QStringLiteral( "%1 %2" ).arg( name ).arg( styleName );
             mLayer->saveStyleToDatabase( name, dbSettings.description, dbSettings.isDefault, dbSettings.uiFileContent, msgError );
 
             if ( !msgError.isNull() )
@@ -1358,7 +1344,7 @@ void QgsVectorLayerProperties::saveMultipleStylesAs()
             }
             else
             {
-              mMessageBar->pushMessage( infoWindowTitle, tr( "Style '%1' saved" ).arg( styleName ),
+              mMessageBar->pushMessage( infoWindowTitle, tr( "Style '%1' saved" ).arg( name ),
                                         Qgis::MessageLevel::Success );
             }
             break;
