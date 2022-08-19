@@ -1325,8 +1325,8 @@ class GUI_EXPORT QgsMapCanvas : public QGraphicsView, public QgsExpressionContex
     //! Pointer to project linked to this canvas
     QgsProject *mProject = nullptr;
 
-    //! recently used extent
-    QList <QgsRectangle> mLastExtent;
+    //! recently used extent and scale
+    QList < QPair<QgsRectangle, double> > mLastExtent;
     int mLastExtentIndex = -1;
 
     //! Scale factor multiple for default zoom in/out

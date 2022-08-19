@@ -1457,9 +1457,10 @@ void QgsMapCanvas::setExtent( const QgsRectangle &r, bool magnified )
     mLastExtent.removeAt( i );
   }
 
-  if ( !mLastExtent.isEmpty() && mLastExtent.last() != extent() )
+  const QPair <QgsRectangle, double> currExtentScale = QPair( extent(), scale() );
+  if ( !mLastExtent.isEmpty() && mLastExtent.last() != currExtentScale )
   {
-    mLastExtent.append( extent() );
+    mLastExtent.append( currExtentScale );
   }
 
   // adjust history to no more than 100
@@ -1576,7 +1577,15 @@ void QgsMapCanvas::zoomToPreviousExtent()
   if ( mLastExtentIndex > 0 )
   {
     mLastExtentIndex--;
-    mSettings.setExtent( mLastExtent[mLastExtentIndex] );
+    QgsRectangle extent = mLastExtent[mLastExtentIndex].first;
+    mSettings.setExtent( extent );
+    if ( rotation() != 0 )
+    {
+      // When map is rotated the extent must be corrected to get the good scale
+      double savedScale = mLastExtent[mLastExtentIndex].second;
+      extent.scale( savedScale / mSettings.scale() );
+      mSettings.setExtent( extent );
+    }
     emit extentsChanged();
     updateScale();
     refresh();
@@ -1592,7 +1601,15 @@ void QgsMapCanvas::zoomToNextExtent()
   if ( mLastExtentIndex < mLastExtent.size() - 1 )
   {
     mLastExtentIndex++;
-    mSettings.setExtent( mLastExtent[mLastExtentIndex] );
+    QgsRectangle extent = mLastExtent[mLastExtentIndex].first;
+    mSettings.setExtent( extent );
+    if ( rotation() != 0 )
+    {
+      // When map is rotated the extent must be corrected to get the good scale
+      const double savedScale = mLastExtent[mLastExtentIndex].second;
+      extent.scale( savedScale / mSettings.scale() );
+      mSettings.setExtent( extent );
+    }
     emit extentsChanged();
     updateScale();
     refresh();
@@ -1605,7 +1622,7 @@ void QgsMapCanvas::zoomToNextExtent()
 void QgsMapCanvas::clearExtentHistory()
 {
   mLastExtent.clear(); // clear the zoom history list
-  mLastExtent.append( extent() ) ; // set the current extent in the list
+  mLastExtent.append( QPair( extent(), scale() ) ) ; // set the current extent and scale in the list
   mLastExtentIndex = mLastExtent.size() - 1;
   // update controls' enabled state
   emit zoomLastStatusChanged( mLastExtentIndex > 0 );
