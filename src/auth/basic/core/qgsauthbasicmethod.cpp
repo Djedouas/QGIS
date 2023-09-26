@@ -93,6 +93,7 @@ bool QgsAuthBasicMethod::updateNetworkRequest( QNetworkRequest &request, const Q
 bool QgsAuthBasicMethod::updateDataSourceUriItems( QStringList &connectionItems, const QString &authcfg,
     const QString &dataprovider )
 {
+  qDebug() << "heyhey ! ###";
   Q_UNUSED( dataprovider )
   const QMutexLocker locker( &mMutex );
   const QgsAuthMethodConfig mconfig = getMethodConfig( authcfg );
