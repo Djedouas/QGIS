@@ -17,6 +17,7 @@
 
 #include "qgsalgorithmcheckgeometryangle.h"
 #include "qgsgeometrycheckcontext.h"
+#include "qgsgeometrychecker.h"
 #include "qgsgeometrycheckerror.h"
 #include "qgsgeometryanglecheck.h"
 #include "qgspoint.h"
@@ -132,6 +133,7 @@ auto QgsGeometryCheckAngleAlgorithm::processAlgorithm( const QVariantMap &parame
 {
   QString dest_output;
   QString dest_errors;
+  qDebug() << parameters;
   std::unique_ptr< QgsProcessingFeatureSource > source( parameterAsSource( parameters, QStringLiteral( "INPUT" ), context ) );
   if ( !source )
     throw QgsProcessingException( invalidSourceError( parameters, QStringLiteral( "INPUT" ) ) );
@@ -174,7 +176,7 @@ auto QgsGeometryCheckAngleAlgorithm::processAlgorithm( const QVariantMap &parame
 
   QVariantMap configurationCheck;
   configurationCheck.insert( "minAngle", minAngle );
-  const QgsGeometryAngleCheck check( checkContext.get(), configurationCheck );
+  QgsGeometryAngleCheck check( checkContext.get(), configurationCheck );
 
   multiStepFeedback.setCurrentStep( 1 );
   feedback->setProgressText( QObject::tr( "Preparing features…" ) );
@@ -184,6 +186,7 @@ auto QgsGeometryCheckAngleAlgorithm::processAlgorithm( const QVariantMap &parame
   multiStepFeedback.setCurrentStep( 2 );
   feedback->setProgressText( QObject::tr( "Collecting errors…" ) );
   check.collectErrors( featurePools, checkErrors, messages, feedback );
+  QgsGeometryChecker *checker = new QgsGeometryChecker( QList<QgsGeometryCheck *>() << &check, checkContext.get(), featurePools );
 
   multiStepFeedback.setCurrentStep( 3 );
   feedback->setProgressText( QObject::tr( "Exporting errors…" ) );
@@ -216,7 +219,7 @@ auto QgsGeometryCheckAngleAlgorithm::processAlgorithm( const QVariantMap &parame
     {
       QgsGeometryCheck::Changes changes;
       QMap<QString, int> mergeIndice;
-      check.fixError( featurePools, error, resolutionMethod, mergeIndice, changes );
+      qDebug() << "Le fixError est" << checker->fixError( error, resolutionMethod, true );
     }
     else
     {
@@ -239,6 +242,7 @@ auto QgsGeometryCheckAngleAlgorithm::processAlgorithm( const QVariantMap &parame
     feedback->setProgressText( QObject::tr( "Exporting (fixed) layer…" ) );
 
     const QgsFeaturePool *featurePool = featurePools[ mInputLayer->id() ];
+    qDebug() << "clé du layer dans le feature pool" << mInputLayer->id() << "id du layer dans le feature pool" << featurePools[mInputLayer->id()]->layer()->id();
     QgsFeatureIds featureIds{featurePool->allFeatureIds()};
     QgsFeatureIterator featIt{mInputLayer->getFeatures( featureIds )};
 
@@ -248,6 +252,7 @@ auto QgsGeometryCheckAngleAlgorithm::processAlgorithm( const QVariantMap &parame
     QgsFeature feat;
     while ( featIt.nextFeature( feat ) )
     {
+      qDebug() << "feat id" << feat.id();
       if ( feedback->isCanceled() )
       {
         break;

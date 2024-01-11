@@ -13,11 +13,13 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsabstractgeometry.h"
 #include "qgsgeometrycheckcontext.h"
 #include "qgsgeometryanglecheck.h"
 #include "qgsgeometryutils.h"
 #include "qgsfeaturepool.h"
 #include "qgsgeometrycheckerror.h"
+#include "qgslinestring.h"
 
 QList<Qgis::GeometryType> QgsGeometryAngleCheck::compatibleGeometryTypes() const
 {
@@ -74,12 +76,15 @@ void QgsGeometryAngleCheck::collectErrors( const QMap<QString, QgsFeaturePool *>
 void QgsGeometryAngleCheck::fixError( const QMap<QString, QgsFeaturePool *> &featurePools, QgsGeometryCheckError *error, int method, const QMap<QString, int> & /*mergeAttributeIndices*/, Changes &changes ) const
 {
   QgsFeaturePool *featurePool = featurePools[ error->layerId() ];
+  qDebug() << "layerID" << featurePool->layerId();
+  qDebug() << "layerName" << featurePool->layerName();
   QgsFeature feature;
   if ( !featurePool->getFeature( error->featureId(), feature ) )
   {
     error->setObsolete();
     return;
   }
+  qDebug() << "Fixing feature id :" << feature.id();
   QgsGeometry featureGeometry = feature.geometry();
   QgsAbstractGeometry *geometry = featureGeometry.get();
   const QgsVertexId vidx = error->vidx();
@@ -120,6 +125,7 @@ void QgsGeometryAngleCheck::fixError( const QMap<QString, QgsFeaturePool *> &fea
   }
 
   // Fix error
+  qDebug() << "num points avant :" << QgsGeometryCheckerUtils::polyLineSize( geometry, vidx.part, vidx.ring );
   if ( method == NoChange )
   {
     error->setFixed( method );
@@ -146,6 +152,10 @@ void QgsGeometryAngleCheck::fixError( const QMap<QString, QgsFeaturePool *> &fea
       }
       feature.setGeometry( featureGeometry );
       featurePool->updateFeature( feature );
+      qDebug() << "num points après :" << QgsGeometryCheckerUtils::polyLineSize( geometry, vidx.part, vidx.ring );
+      QgsFeature toto;
+      featurePool->getFeature( feature.id(), toto );
+      qDebug() << "num points après dans feature pool:" << QgsGeometryCheckerUtils::polyLineSize( toto.geometry().get(), vidx.part, vidx.ring );
       error->setFixed( method );
     }
   }

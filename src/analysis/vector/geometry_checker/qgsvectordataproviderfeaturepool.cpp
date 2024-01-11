@@ -129,8 +129,7 @@ bool QgsVectorDataProviderFeaturePool::addFeatures( QgsFeatureList &features, Qg
 
 void QgsVectorDataProviderFeaturePool::updateFeature( QgsFeature &feature )
 {
-  QgsFeature origFeature;
-  getFeature( feature.id(), origFeature );
+  qDebug() << "Updating feature id:" << feature.id();
 
   QgsGeometryMap geometryMap;
   geometryMap.insert( feature.id(), feature.geometry() );
