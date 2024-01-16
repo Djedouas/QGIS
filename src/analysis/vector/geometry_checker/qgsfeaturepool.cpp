@@ -125,6 +125,7 @@ void QgsFeaturePool::insertFeature( const QgsFeature &feature, bool skipLock )
   mFeatureCache.insert( feature.id(), new QgsFeature( feature ) );
   QgsFeature indexFeature( feature );
   mIndex.addFeature( indexFeature );
+  mFeatureIds.insert( feature.id() );
 }
 
 void QgsFeaturePool::refreshCache( const QgsFeature &feature )
