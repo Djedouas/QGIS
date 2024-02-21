@@ -35,10 +35,14 @@ class TestQgsProcessingCheckGeometry: public QgsTest
     void angleAlg_data();
     void angleAlg();
 
+    void duplicateAlg_data();
+    void duplicateAlg();
+
   private:
 
     QgsVectorLayer *mLineLayer = nullptr;
     QgsVectorLayer *mPolygonLayer = nullptr;
+    QgsVectorLayer *mPointLayer = nullptr;
 };
 
 void TestQgsProcessingCheckGeometry::initTestCase()
@@ -66,6 +70,12 @@ void TestQgsProcessingCheckGeometry::initTestCase()
   // Register the layer with the registry
   QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mPolygonLayer );
   QVERIFY( mPolygonLayer->isValid() );
+
+  //create a point layer that will be used in tests
+  mPointLayer = new QgsVectorLayer( testDataDir.absoluteFilePath( "point_layer.shp" ), QStringLiteral( "points" ), QStringLiteral( "ogr" ) );
+  // Register the layer with the registry
+  QgsProject::instance()->addMapLayers( QList<QgsMapLayer *>() << mPointLayer );
+  QVERIFY( mPointLayer->isValid() );
 }
 
 void TestQgsProcessingCheckGeometry::cleanupTestCase()
@@ -94,6 +104,46 @@ void TestQgsProcessingCheckGeometry::angleAlg()
   QVariantMap parameters;
   parameters.insert( QStringLiteral( "INPUT" ), QVariant::fromValue( layerToTest ) );
   parameters.insert( QStringLiteral( "MIN_ANGLE" ), 15 );
+  parameters.insert( QStringLiteral( "OUTPUT" ), QgsProcessing::TEMPORARY_OUTPUT );
+  parameters.insert( QStringLiteral( "ERRORS" ), QgsProcessing::TEMPORARY_OUTPUT );
+
+  bool ok = false;
+  QgsProcessingFeedback feedback;
+  std::unique_ptr< QgsProcessingContext > context = std::make_unique< QgsProcessingContext >();
+
+  QVariantMap results;
+  results = alg->run( parameters, *context, &feedback, &ok );
+  QVERIFY( ok );
+
+  std::unique_ptr<QgsVectorLayer> outputLayer( qobject_cast< QgsVectorLayer * >( context->getMapLayer( results.value( QStringLiteral( "OUTPUT" ) ).toString() ) ) );
+  std::unique_ptr<QgsVectorLayer> errorsLayer( qobject_cast< QgsVectorLayer * >( context->getMapLayer( results.value( QStringLiteral( "ERRORS" ) ).toString() ) ) );
+  QVERIFY( outputLayer->isValid() );
+  QVERIFY( errorsLayer->isValid() );
+  QCOMPARE( outputLayer->featureCount(), expectedErrorCount );
+  QCOMPARE( errorsLayer->featureCount(), expectedErrorCount );
+}
+
+void TestQgsProcessingCheckGeometry::duplicateAlg_data()
+{
+  QTest::addColumn<QgsVectorLayer *>( "layerToTest" );
+  QTest::addColumn<int>( "expectedErrorCount" );
+  QTest::newRow( "Point layer" ) << mPointLayer << 1;
+  QTest::newRow( "Line layer" ) << mLineLayer << 1;
+  QTest::newRow( "Polygon layer" ) << mPolygonLayer << 1;
+}
+
+void TestQgsProcessingCheckGeometry::duplicateAlg()
+{
+  QFETCH( QgsVectorLayer *, layerToTest );
+  QFETCH( int, expectedErrorCount );
+
+  std::unique_ptr< QgsProcessingAlgorithm > alg(
+    QgsApplication::processingRegistry()->createAlgorithmById( QStringLiteral( "native:checkgeometryduplicate" ) )
+  );
+  QVERIFY( alg != nullptr );
+
+  QVariantMap parameters;
+  parameters.insert( QStringLiteral( "INPUT" ), QVariant::fromValue( layerToTest ) );
   parameters.insert( QStringLiteral( "OUTPUT" ), QgsProcessing::TEMPORARY_OUTPUT );
   parameters.insert( QStringLiteral( "ERRORS" ), QgsProcessing::TEMPORARY_OUTPUT );
 
