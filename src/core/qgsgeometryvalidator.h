@@ -37,7 +37,16 @@ class CORE_EXPORT QgsGeometryValidator : public QThread
     /**
      * Constructor for QgsGeometryValidator.
      */
-    QgsGeometryValidator( const QgsGeometry &geometry, QVector<QgsGeometry::Error> *errors = nullptr, Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal );
+    QgsGeometryValidator(
+      const QgsGeometry &geometry,
+      QVector<QgsGeometry::Error> *errors = nullptr,
+      Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal,
+      const Qgis::GeometryValidityFlags flags = Qgis::GeometryValidityFlag::AllowSelfTouchingHoles
+    );
+
+    /**
+     * Destructor for QgsGeometryValidator
+     */
     ~QgsGeometryValidator() override;
 
     void run() override;
@@ -47,7 +56,12 @@ class CORE_EXPORT QgsGeometryValidator : public QThread
      * Validate geometry and produce a list of geometry errors.
      * This method blocks the thread until the validation is finished.
      */
-    static void validateGeometry( const QgsGeometry &geometry, QVector<QgsGeometry::Error> &errors SIP_OUT, Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal );
+    static void validateGeometry(
+      const QgsGeometry &geometry,
+      QVector<QgsGeometry::Error> &errors SIP_OUT,
+      Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal,
+      const Qgis::GeometryValidityFlags flags = Qgis::GeometryValidityFlag::AllowSelfTouchingHoles
+    );
 
   signals:
 
@@ -85,6 +99,7 @@ class CORE_EXPORT QgsGeometryValidator : public QThread
     QVector<QgsGeometry::Error> *mErrors;
     bool mStop;
     int mErrorCount;
+    Qgis::GeometryValidityFlags mFlags = Qgis::GeometryValidityFlag::AllowSelfTouchingHoles;
     Qgis::GeometryValidationEngine mMethod = Qgis::GeometryValidationEngine::QgisInternal;
 };
 

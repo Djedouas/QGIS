@@ -18,17 +18,28 @@ class QgsGeometryValidator : QThread
 %End
   public:
 
-    QgsGeometryValidator( const QgsGeometry &geometry, QVector<QgsGeometry::Error> *errors = 0, Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal );
+    QgsGeometryValidator(
+      const QgsGeometry &geometry,
+      QVector<QgsGeometry::Error> *errors = 0,
+      Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal,
+      const Qgis::GeometryValidityFlags flags = Qgis::GeometryValidityFlag::AllowSelfTouchingHoles
+    );
 %Docstring
 Constructor for QgsGeometryValidator.
 %End
+
     ~QgsGeometryValidator();
 
     virtual void run();
 
     void stop();
 
-    static void validateGeometry( const QgsGeometry &geometry, QVector<QgsGeometry::Error> &errors /Out/, Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal );
+    static void validateGeometry(
+      const QgsGeometry &geometry,
+      QVector<QgsGeometry::Error> &errors /Out/,
+      Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal,
+      const Qgis::GeometryValidityFlags flags = Qgis::GeometryValidityFlag::AllowSelfTouchingHoles
+    );
 %Docstring
 Validate geometry and produce a list of geometry errors.
 This method blocks the thread until the validation is finished.

@@ -23,11 +23,12 @@ email                : jef at norbit dot de
 #include "qgscurve.h"
 #include "qgsvertexid.h"
 
-QgsGeometryValidator::QgsGeometryValidator( const QgsGeometry &geometry, QVector<QgsGeometry::Error> *errors, Qgis::GeometryValidationEngine method )
+QgsGeometryValidator::QgsGeometryValidator( const QgsGeometry &geometry, QVector<QgsGeometry::Error> *errors, Qgis::GeometryValidationEngine method, const Qgis::GeometryValidityFlags flags )
   : mGeometry( geometry )
   , mErrors( errors )
   , mStop( false )
   , mErrorCount( 0 )
+  , mFlags( flags )
   , mMethod( method )
 {
 }
@@ -260,7 +261,7 @@ void QgsGeometryValidator::run()
       const QgsGeos geos( mGeometry.constGet() );
       QString error;
       QgsGeometry errorLoc;
-      if ( !geos.isValid( &error, true, &errorLoc ) )
+      if ( !geos.isValid( &error,  mFlags & Qgis::GeometryValidityFlag::AllowSelfTouchingHoles, &errorLoc ) )
       {
         if ( errorLoc.isNull() )
         {
@@ -382,9 +383,9 @@ void QgsGeometryValidator::addError( const QgsGeometry::Error &e )
     *mErrors << e;
 }
 
-void QgsGeometryValidator::validateGeometry( const QgsGeometry &geometry, QVector<QgsGeometry::Error> &errors, Qgis::GeometryValidationEngine method )
+void QgsGeometryValidator::validateGeometry( const QgsGeometry &geometry, QVector<QgsGeometry::Error> &errors, Qgis::GeometryValidationEngine method, const Qgis::GeometryValidityFlags flags )
 {
-  QgsGeometryValidator *gv = new QgsGeometryValidator( geometry, &errors, method );
+  QgsGeometryValidator *gv = new QgsGeometryValidator( geometry, &errors, method, flags );
   connect( gv, &QgsGeometryValidator::errorFound, gv, &QgsGeometryValidator::addError );
   gv->run();
   gv->wait();

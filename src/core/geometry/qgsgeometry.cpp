@@ -3319,32 +3319,7 @@ void QgsGeometry::validateGeometry( QVector<QgsGeometry::Error> &errors, const Q
     return;
   }
 
-  switch ( method )
-  {
-    case Qgis::GeometryValidationEngine::QgisInternal:
-      QgsGeometryValidator::validateGeometry( *this, errors, method );
-      return;
-
-    case Qgis::GeometryValidationEngine::Geos:
-    {
-      QgsGeos geos( d->geometry.get() );
-      QString error;
-      QgsGeometry errorLoc;
-      if ( !geos.isValid( &error, flags & Qgis::GeometryValidityFlag::AllowSelfTouchingHoles, &errorLoc ) )
-      {
-        if ( errorLoc.isNull() )
-        {
-          errors.append( QgsGeometry::Error( error ) );
-        }
-        else
-        {
-          const QgsPointXY point = errorLoc.asPoint();
-          errors.append( QgsGeometry::Error( error, point ) );
-        }
-        return;
-      }
-    }
-  }
+  QgsGeometryValidator::validateGeometry( *this, errors, method, flags );
 }
 
 void QgsGeometry::normalize()
