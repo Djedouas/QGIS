@@ -1145,6 +1145,10 @@ QgsOptions::QgsOptions( QWidget *parent, Qt::WindowFlags fl, const QList<QgsOpti
   mValidateGeometries->addItem( tr( "Off" ) );
   mValidateGeometries->addItem( tr( "QGIS" ) );
   mValidateGeometries->addItem( tr( "GEOS" ) );
+  mValidateGeometries->setCurrentIndex( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() );
+
+  Qgis::GeometryValidityFlags geometryValidityFlags = QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value();
+  chkValidateGeometriesFlagAllowSelfTouchingHoles->setChecked( geometryValidityFlags.testFlag( Qgis::GeometryValidityFlag::AllowSelfTouchingHoles ) );
 
   QString markerStyle = QgsSettingsRegistryCore::settingsDigitizingMarkerStyle->value();
   if ( markerStyle == QLatin1String( "SemiTransparentCircle" ) )
@@ -1164,7 +1168,6 @@ QgsOptions::QgsOptions( QWidget *parent, Qt::WindowFlags fl, const QList<QgsOpti
 
   chkReuseLastValues->setChecked( QgsSettingsRegistryCore::settingsDigitizingReuseLastValues->value() );
   chkDisableAttributeValuesDlg->setChecked( QgsSettingsRegistryCore::settingsDigitizingDisableEnterAttributeValuesDialog->value() );
-  mValidateGeometries->setCurrentIndex( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() );
 
   mSnappingMainDialogComboBox->clear();
   mSnappingMainDialogComboBox->addItem( tr( "Dialog" ), "dialog" );
@@ -1806,6 +1809,10 @@ void QgsOptions::saveOptions()
   QgsSettingsRegistryCore::settingsDigitizingReuseLastValues->setValue( chkReuseLastValues->isChecked() );
   QgsSettingsRegistryCore::settingsDigitizingDisableEnterAttributeValuesDialog->setValue( chkDisableAttributeValuesDlg->isChecked() );
   QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->setValue( mValidateGeometries->currentIndex() );
+
+  Qgis::GeometryValidityFlags geometryValidityFlags;
+  geometryValidityFlags.setFlag( Qgis::GeometryValidityFlag::AllowSelfTouchingHoles, chkValidateGeometriesFlagAllowSelfTouchingHoles->isChecked() );
+  QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->setValue( geometryValidityFlags );
 
   QgsSettingsRegistryCore::settingsDigitizingOffsetJoinStyle->setValue( mOffsetJoinStyleComboBox->currentData().value<Qgis::JoinStyle>() );
   QgsSettingsRegistryCore::settingsDigitizingOffsetQuadSeg->setValue( mOffsetQuadSegSpinBox->value() );

@@ -963,6 +963,7 @@ The development version
 
     enum class GeometryValidityFlag
     {
+      NoFlags,
       AllowSelfTouchingHoles,
     };
     typedef QFlags<Qgis::GeometryValidityFlag> GeometryValidityFlags;
@@ -970,6 +971,7 @@ The development version
 
     enum class GeometryValidationEngine
       {
+      NoValidation,
       QgisInternal,
       Geos,
     };

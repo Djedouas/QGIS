@@ -89,6 +89,9 @@ const QgsSettingsEntryBool *QgsSettingsRegistryCore::settingsDigitizingDisableEn
 
 const QgsSettingsEntryInteger *QgsSettingsRegistryCore::settingsDigitizingValidateGeometries = new QgsSettingsEntryInteger( QStringLiteral( "validate-geometries" ), QgsSettingsTree::sTreeDigitizing, 1 );
 
+// Default value set to 1 to activate the flag AllowSelfTouchingHoles by default
+const QgsSettingsEntryEnumFlag<Qgis::GeometryValidityFlags> *QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags = new QgsSettingsEntryEnumFlag<Qgis::GeometryValidityFlags>( QStringLiteral( "validate-geometries-flags" ), QgsSettingsTree::sTreeDigitizing, Qgis::GeometryValidityFlag::AllowSelfTouchingHoles );
+
 const QgsSettingsEntryInteger *QgsSettingsRegistryCore::settingsDigitizingOffsetQuadSeg = new QgsSettingsEntryInteger( QStringLiteral( "offset-quad-seg" ), QgsSettingsTree::sTreeDigitizing, 8 );
 
 const QgsSettingsEntryDouble *QgsSettingsRegistryCore::settingsDigitizingOffsetMiterLimit = new QgsSettingsEntryDouble( QStringLiteral( "offset-miter-limit" ), QgsSettingsTree::sTreeDigitizing, 5.0 );

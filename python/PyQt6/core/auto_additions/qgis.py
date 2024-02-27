@@ -1647,11 +1647,14 @@ Qgis.GeometryOperationResult.__doc__ = "Success or failure of a geometry operati
 Qgis.GeometryOperationResult.baseClass = Qgis
 QgsGeometry.ValidityFlag = Qgis.GeometryValidityFlag
 # monkey patching scoped based enum
+QgsGeometry.NoFlags = Qgis.GeometryValidityFlag.NoFlags
+QgsGeometry.NoFlags.is_monkey_patched = True
+QgsGeometry.NoFlags.__doc__ = ""
 QgsGeometry.FlagAllowSelfTouchingHoles = Qgis.GeometryValidityFlag.AllowSelfTouchingHoles
 QgsGeometry.ValidityFlag.FlagAllowSelfTouchingHoles = Qgis.GeometryValidityFlag.AllowSelfTouchingHoles
 QgsGeometry.FlagAllowSelfTouchingHoles.is_monkey_patched = True
 QgsGeometry.FlagAllowSelfTouchingHoles.__doc__ = "Indicates that self-touching holes are permitted. OGC validity states that self-touching holes are NOT permitted, whilst other vendor validity checks (e.g. ESRI) permit self-touching holes."
-Qgis.GeometryValidityFlag.__doc__ = "Geometry validity check flags.\n\n.. versionadded:: 3.22\n\n" + '* ``FlagAllowSelfTouchingHoles``: ' + Qgis.GeometryValidityFlag.AllowSelfTouchingHoles.__doc__
+Qgis.GeometryValidityFlag.__doc__ = "Geometry validity check flags.\n\n.. versionadded:: 3.22\n\n" + '* ``NoFlags``: ' + Qgis.GeometryValidityFlag.NoFlags.__doc__ + '\n' + '* ``FlagAllowSelfTouchingHoles``: ' + Qgis.GeometryValidityFlag.AllowSelfTouchingHoles.__doc__
 # --
 Qgis.GeometryValidityFlags = lambda flags=0: Qgis.GeometryValidityFlag(flags)
 QgsGeometry.ValidityFlags = Qgis.GeometryValidityFlags
@@ -1660,6 +1663,9 @@ Qgis.GeometryValidityFlags.baseClass = Qgis
 GeometryValidityFlags = Qgis  # dirty hack since SIP seems to introduce the flags in module
 QgsGeometry.ValidationMethod = Qgis.GeometryValidationEngine
 # monkey patching scoped based enum
+QgsGeometry.NoValidation = Qgis.GeometryValidationEngine.NoValidation
+QgsGeometry.NoValidation.is_monkey_patched = True
+QgsGeometry.NoValidation.__doc__ = ""
 QgsGeometry.ValidatorQgisInternal = Qgis.GeometryValidationEngine.QgisInternal
 QgsGeometry.ValidationMethod.ValidatorQgisInternal = Qgis.GeometryValidationEngine.QgisInternal
 QgsGeometry.ValidatorQgisInternal.is_monkey_patched = True
@@ -1668,7 +1674,7 @@ QgsGeometry.ValidatorGeos = Qgis.GeometryValidationEngine.Geos
 QgsGeometry.ValidationMethod.ValidatorGeos = Qgis.GeometryValidationEngine.Geos
 QgsGeometry.ValidatorGeos.is_monkey_patched = True
 QgsGeometry.ValidatorGeos.__doc__ = "Use GEOS validation methods"
-Qgis.GeometryValidationEngine.__doc__ = "Available engines for validating geometries.\n\n.. versionadded:: 3.22\n\n" + '* ``ValidatorQgisInternal``: ' + Qgis.GeometryValidationEngine.QgisInternal.__doc__ + '\n' + '* ``ValidatorGeos``: ' + Qgis.GeometryValidationEngine.Geos.__doc__
+Qgis.GeometryValidationEngine.__doc__ = "Available engines for validating geometries.\n\n.. versionadded:: 3.22\n\n" + '* ``NoValidation``: ' + Qgis.GeometryValidationEngine.NoValidation.__doc__ + '\n' + '* ``ValidatorQgisInternal``: ' + Qgis.GeometryValidationEngine.QgisInternal.__doc__ + '\n' + '* ``ValidatorGeos``: ' + Qgis.GeometryValidationEngine.Geos.__doc__
 # --
 Qgis.GeometryValidationEngine.baseClass = Qgis
 QgsGeometry.BufferSide = Qgis.BufferSide

@@ -128,6 +128,9 @@ class CORE_EXPORT QgsSettingsRegistryCore : public QgsSettingsRegistry
     //! Settings entry digitizing validate geometries
     static const QgsSettingsEntryInteger *settingsDigitizingValidateGeometries;
 
+    //! Settings entry digitizing validate geometries flags
+    static const QgsSettingsEntryEnumFlag<Qgis::GeometryValidityFlags> *settingsDigitizingValidateGeometriesFlags;
+
     //! Settings entry digitizing offset join style
     static const QgsSettingsEntryEnumFlag<Qgis::JoinStyle> *settingsDigitizingOffsetJoinStyle;
 
