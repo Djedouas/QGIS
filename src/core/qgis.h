@@ -1637,6 +1637,7 @@ class CORE_EXPORT Qgis
      */
     enum class GeometryValidationEngine SIP_MONKEYPATCH_SCOPEENUM_UNNEST( QgsGeometry, ValidationMethod ) : int
       {
+      NoValidation SIP_MONKEYPATCH_COMPAT_NAME( ValidatorNoValidation ),
       QgisInternal SIP_MONKEYPATCH_COMPAT_NAME( ValidatorQgisInternal ), //!< Use internal QgsGeometryValidator method
       Geos SIP_MONKEYPATCH_COMPAT_NAME( ValidatorGeos ), //!< Use GEOS validation methods
     };

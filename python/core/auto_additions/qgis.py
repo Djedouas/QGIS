@@ -1631,9 +1631,10 @@ Qgis.GeometryValidityFlags.baseClass = Qgis
 GeometryValidityFlags = Qgis  # dirty hack since SIP seems to introduce the flags in module
 QgsGeometry.ValidationMethod = Qgis.GeometryValidationEngine
 # monkey patching scoped based enum
-QgsGeometry.NoValidation = Qgis.GeometryValidationEngine.NoValidation
-QgsGeometry.NoValidation.is_monkey_patched = True
-QgsGeometry.NoValidation.__doc__ = ""
+QgsGeometry.ValidatorNoValidation = Qgis.GeometryValidationEngine.NoValidation
+QgsGeometry.ValidationMethod.ValidatorNoValidation = Qgis.GeometryValidationEngine.NoValidation
+QgsGeometry.ValidatorNoValidation.is_monkey_patched = True
+QgsGeometry.ValidatorNoValidation.__doc__ = ""
 QgsGeometry.ValidatorQgisInternal = Qgis.GeometryValidationEngine.QgisInternal
 QgsGeometry.ValidationMethod.ValidatorQgisInternal = Qgis.GeometryValidationEngine.QgisInternal
 QgsGeometry.ValidatorQgisInternal.is_monkey_patched = True
@@ -1642,7 +1643,7 @@ QgsGeometry.ValidatorGeos = Qgis.GeometryValidationEngine.Geos
 QgsGeometry.ValidationMethod.ValidatorGeos = Qgis.GeometryValidationEngine.Geos
 QgsGeometry.ValidatorGeos.is_monkey_patched = True
 QgsGeometry.ValidatorGeos.__doc__ = "Use GEOS validation methods"
-Qgis.GeometryValidationEngine.__doc__ = "Available engines for validating geometries.\n\n.. versionadded:: 3.22\n\n" + '* ``NoValidation``: ' + Qgis.GeometryValidationEngine.NoValidation.__doc__ + '\n' + '* ``ValidatorQgisInternal``: ' + Qgis.GeometryValidationEngine.QgisInternal.__doc__ + '\n' + '* ``ValidatorGeos``: ' + Qgis.GeometryValidationEngine.Geos.__doc__
+Qgis.GeometryValidationEngine.__doc__ = "Available engines for validating geometries.\n\n.. versionadded:: 3.22\n\n" + '* ``ValidatorNoValidation``: ' + Qgis.GeometryValidationEngine.NoValidation.__doc__ + '\n' + '* ``ValidatorQgisInternal``: ' + Qgis.GeometryValidationEngine.QgisInternal.__doc__ + '\n' + '* ``ValidatorGeos``: ' + Qgis.GeometryValidationEngine.Geos.__doc__
 # --
 Qgis.GeometryValidationEngine.baseClass = Qgis
 QgsGeometry.BufferSide = Qgis.BufferSide

@@ -1142,10 +1142,10 @@ QgsOptions::QgsOptions( QWidget *parent, Qt::WindowFlags fl, const QList<QgsOpti
   mMarkerStyleComboBox->addItem( tr( "None" ) );
 
   mValidateGeometries->clear();
-  mValidateGeometries->addItem( tr( "Off" ) );
-  mValidateGeometries->addItem( tr( "QGIS" ) );
-  mValidateGeometries->addItem( tr( "GEOS" ) );
-  mValidateGeometries->setCurrentIndex( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() );
+  mValidateGeometries->addItem( tr( "Off" ), static_cast<int>( Qgis::GeometryValidationEngine::NoValidation ) );
+  mValidateGeometries->addItem( tr( "QGIS" ), static_cast<int>( Qgis::GeometryValidationEngine::QgisInternal ) );
+  mValidateGeometries->addItem( tr( "GEOS" ), static_cast<int>( Qgis::GeometryValidationEngine::Geos ) );
+  mValidateGeometries->setCurrentIndex( mValidateGeometries->findData( static_cast<int>( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() ) ) );
 
   Qgis::GeometryValidityFlags geometryValidityFlags = QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value();
   chkValidateGeometriesFlagAllowSelfTouchingHoles->setChecked( geometryValidityFlags.testFlag( Qgis::GeometryValidityFlag::AllowSelfTouchingHoles ) );
@@ -1808,7 +1808,7 @@ void QgsOptions::saveOptions()
 
   QgsSettingsRegistryCore::settingsDigitizingReuseLastValues->setValue( chkReuseLastValues->isChecked() );
   QgsSettingsRegistryCore::settingsDigitizingDisableEnterAttributeValuesDialog->setValue( chkDisableAttributeValuesDlg->isChecked() );
-  QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->setValue( mValidateGeometries->currentIndex() );
+  QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->setValue( mValidateGeometries->currentData().value<Qgis::GeometryValidationEngine>() );
 
   Qgis::GeometryValidityFlags geometryValidityFlags;
   geometryValidityFlags.setFlag( Qgis::GeometryValidityFlag::AllowSelfTouchingHoles, chkValidateGeometriesFlagAllowSelfTouchingHoles->isChecked() );

@@ -35,6 +35,7 @@
 #include "qgsmaptoolshaperegistry.h"
 #include "qgssnappingutils.h"
 #include "qgsadvanceddigitizingdockwidget.h"
+#include "qgssettingsentryenumflag.h"
 
 #include <QAction>
 #include <QCursor>
@@ -1035,7 +1036,7 @@ void QgsMapToolCapture::closePolygon()
 
 void QgsMapToolCapture::validateGeometry()
 {
-  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 0
+  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == Qgis::GeometryValidationEngine::NoValidation
        || !( capabilities() & ValidateGeometries )
      )
     return;
@@ -1078,10 +1079,7 @@ void QgsMapToolCapture::validateGeometry()
   if ( geom.isNull() )
     return;
 
-  Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal;
-  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 2 )
-    method = Qgis::GeometryValidationEngine::Geos;
-  mValidator = new QgsGeometryValidator( geom, nullptr, method );
+  mValidator = new QgsGeometryValidator( geom, nullptr, QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value(), QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value() );
   connect( mValidator, &QgsGeometryValidator::errorFound, this, &QgsMapToolCapture::addError );
   mValidator->start();
   QgsDebugMsgLevel( QStringLiteral( "Validation started" ), 4 );

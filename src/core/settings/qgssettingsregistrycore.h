@@ -126,7 +126,7 @@ class CORE_EXPORT QgsSettingsRegistryCore : public QgsSettingsRegistry
     static const QgsSettingsEntryBool *settingsDigitizingDisableEnterAttributeValuesDialog;
 
     //! Settings entry digitizing validate geometries
-    static const QgsSettingsEntryInteger *settingsDigitizingValidateGeometries;
+    static const QgsSettingsEntryEnumFlag<Qgis::GeometryValidationEngine> *settingsDigitizingValidateGeometries;
 
     //! Settings entry digitizing validate geometries flags
     static const QgsSettingsEntryEnumFlag<Qgis::GeometryValidityFlags> *settingsDigitizingValidateGeometriesFlags;

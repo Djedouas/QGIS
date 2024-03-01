@@ -250,6 +250,9 @@ void QgsGeometryValidator::run()
 
   switch ( mMethod )
   {
+    case Qgis::GeometryValidationEngine::NoValidation:
+      return;
+
     case Qgis::GeometryValidationEngine::Geos:
     {
       // avoid calling geos for trivial point geometries

@@ -17,6 +17,7 @@ email                : matthias@opengis.ch
 #include "qgssettingsregistrycore.h"
 #include "qgsgeometryvalidator.h"
 #include "qgssettingsentryimpl.h"
+#include "qgssettingsentryenumflag.h"
 
 
 QgsGeometryIsValidCheck::QgsGeometryIsValidCheck( const QgsGeometryCheckContext *context, const QVariantMap &configuration )
@@ -32,10 +33,8 @@ QList<QgsSingleGeometryCheckError *> QgsGeometryIsValidCheck::processGeometry( c
 {
   QVector<QgsGeometry::Error> errors;
 
-  Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal;
-  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 2 )
-    method = Qgis::GeometryValidationEngine::Geos;
 
+  Qgis::GeometryValidationEngine method = QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value();
   Qgis::GeometryValidityFlags validityFlags = QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value();
   QgsGeometryValidator validator( geometry, &errors, method, validityFlags );
 

@@ -31,6 +31,7 @@
 #include "qgsstatusbar.h"
 #include "qgsmapcanvas.h"
 #include "qgssettingsentryimpl.h"
+#include "qgssettingsentryenumflag.h"
 
 
 
@@ -125,7 +126,7 @@ void QgsLockedFeature::geometryChanged( QgsFeatureId fid, const QgsGeometry &geo
 
 void QgsLockedFeature::validateGeometry( QgsGeometry *g )
 {
-  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 0 )
+  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == Qgis::GeometryValidationEngine::NoValidation )
     return;
 
   if ( !g )
@@ -149,10 +150,7 @@ void QgsLockedFeature::validateGeometry( QgsGeometry *g )
     delete vm;
   }
 
-  Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal;
-  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 2 )
-    method = Qgis::GeometryValidationEngine::Geos;
-  mValidator = new QgsGeometryValidator( *g, nullptr, method );
+  mValidator = new QgsGeometryValidator( *g, nullptr, QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value(), QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value() );
   connect( mValidator, &QgsGeometryValidator::errorFound, this, &QgsLockedFeature::addError );
   connect( mValidator, &QThread::finished, this, &QgsLockedFeature::validationFinished );
   mValidator->start();

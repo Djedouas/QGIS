@@ -42,6 +42,7 @@
 #include "qgsexpressioncontextutils.h"
 #include "qgsmessagebar.h"
 #include "qgssettingsentryimpl.h"
+#include "qgssettingsentryenumflag.h"
 
 
 #include <QMenu>
@@ -2921,11 +2922,7 @@ void QgsVertexTool::GeometryValidation::start( QgsGeometry &geom, QgsVertexTool 
 {
   tool = t;
   layer = l;
-  Qgis::GeometryValidationEngine method = Qgis::GeometryValidationEngine::QgisInternal;
-  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 2 )
-    method = Qgis::GeometryValidationEngine::Geos;
-
-  validator = new QgsGeometryValidator( geom, nullptr, method );
+  validator = new QgsGeometryValidator( geom, nullptr, QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value(), QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value() );
   connect( validator, &QgsGeometryValidator::errorFound, tool, &QgsVertexTool::validationErrorFound );
   connect( validator, &QThread::finished, tool, &QgsVertexTool::validationFinished );
   validator->start();
@@ -2971,7 +2968,7 @@ void QgsVertexTool::GeometryValidation::cleanup()
 
 void QgsVertexTool::validateGeometry( QgsVectorLayer *layer, QgsFeatureId featureId )
 {
-  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 0 )
+  if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == Qgis::GeometryValidationEngine::NoValidation )
     return;
 
   QPair<QgsVectorLayer *, QgsFeatureId> id( layer, featureId );

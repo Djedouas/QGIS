@@ -41,10 +41,11 @@ from qgis.core import (Qgis,
                        QgsProcessingParameterEnum,
                        QgsProcessingParameterFeatureSink,
                        QgsProcessingOutputNumber,
-                       QgsProcessingParameterBoolean)
+                       QgsProcessingParameterBoolean,
+                       QgsSettingsRegistryCore)
 from processing.algs.qgis.QgisAlgorithm import QgisAlgorithm
 
-settings_method_key = "/qgis/digitizing/validate_geometries"
+settings_method_key = "/digitizing/validate-geometries"
 pluginPath = os.path.split(os.path.split(os.path.dirname(__file__))[0])[0]
 
 
@@ -113,11 +114,22 @@ class CheckValidity(QgisAlgorithm):
         ignore_ring_self_intersection = self.parameterAsBoolean(parameters, self.IGNORE_RING_SELF_INTERSECTION, context)
         method_param = self.parameterAsEnum(parameters, self.METHOD, context)
         if method_param == 0:
-            settings = QgsSettings()
-            method = int(settings.value(settings_method_key, 0)) - 1
-            method = max(method, 0)
+            method_str = QgsSettings().value(settings_method_key)
+            if method_str == 'NoValidation':
+                raise QgsProcessingException(self.tr("No validation method selected in global QGIS settings"))
+            if method_str == 'QgisInternal':
+                method = Qgis.GeometryValidationEngine.ValidatorQgisInternal
+            elif method_str == 'Geos':
+                method = Qgis.GeometryValidationEngine.ValidatorGeos
+            else:
+                raise QgsProcessingException(self.tr("Unknown validation method"))
+
+        elif method_param == 1:
+            method = Qgis.GeometryValidationEngine.ValidatorQgisInternal
+        elif method_param == 2:
+            method = Qgis.GeometryValidationEngine.ValidatorGeos
         else:
-            method = method_param - 1
+            method = Qgis.GeometryValidationEngine.ValidatorNoValidation
 
         return self.doCheck(
             method, parameters, context, feedback, ignore_ring_self_intersection

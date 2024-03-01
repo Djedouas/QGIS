@@ -87,7 +87,7 @@ const QgsSettingsEntryBool *QgsSettingsRegistryCore::settingsDigitizingReuseLast
 
 const QgsSettingsEntryBool *QgsSettingsRegistryCore::settingsDigitizingDisableEnterAttributeValuesDialog = new QgsSettingsEntryBool( QStringLiteral( "disable-enter-attribute-values-dialog" ), QgsSettingsTree::sTreeDigitizing, false );
 
-const QgsSettingsEntryInteger *QgsSettingsRegistryCore::settingsDigitizingValidateGeometries = new QgsSettingsEntryInteger( QStringLiteral( "validate-geometries" ), QgsSettingsTree::sTreeDigitizing, 1 );
+const QgsSettingsEntryEnumFlag<Qgis::GeometryValidationEngine> *QgsSettingsRegistryCore::settingsDigitizingValidateGeometries = new QgsSettingsEntryEnumFlag<Qgis::GeometryValidationEngine>( QStringLiteral( "validate-geometries" ), QgsSettingsTree::sTreeDigitizing, Qgis::GeometryValidationEngine::QgisInternal );
 
 // Default value set to 1 to activate the flag AllowSelfTouchingHoles by default
 const QgsSettingsEntryEnumFlag<Qgis::GeometryValidityFlags> *QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags = new QgsSettingsEntryEnumFlag<Qgis::GeometryValidityFlags>( QStringLiteral( "validate-geometries-flags" ), QgsSettingsTree::sTreeDigitizing, Qgis::GeometryValidityFlag::AllowSelfTouchingHoles );
