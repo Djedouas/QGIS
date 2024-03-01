@@ -36,7 +36,8 @@ QList<QgsSingleGeometryCheckError *> QgsGeometryIsValidCheck::processGeometry( c
   if ( QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value() == 2 )
     method = Qgis::GeometryValidationEngine::Geos;
 
-  QgsGeometryValidator validator( geometry, &errors, method );
+  Qgis::GeometryValidityFlags validityFlags = QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value();
+  QgsGeometryValidator validator( geometry, &errors, method, validityFlags );
 
   QObject::connect( &validator, &QgsGeometryValidator::errorFound, &validator, [ &errors ]( const QgsGeometry::Error & error )
   {
