@@ -35,7 +35,13 @@ QList<QgsSingleGeometryCheckError *> QgsGeometryIsValidCheck::processGeometry( c
 
 
   Qgis::GeometryValidationEngine method = QgsSettingsRegistryCore::settingsDigitizingValidateGeometries->value();
+  if ( mConfiguration.contains( QStringLiteral( "method" ) ) )  // check configuration prevents on global configuration
+    method = mConfiguration.value( QStringLiteral( "method" ) ).value<Qgis::GeometryValidationEngine>();
+
   Qgis::GeometryValidityFlags validityFlags = QgsSettingsRegistryCore::settingsDigitizingValidateGeometriesFlags->value();
+  if ( mConfiguration.contains( "allowSelfTouchingHoles" ) )  // check configuration prevents on global configuration
+    validityFlags.setFlag( Qgis::GeometryValidityFlag::AllowSelfTouchingHoles, mConfiguration.value( QStringLiteral( "allowSelfTouchingHoles" ) ).toBool() );
+
   QgsGeometryValidator validator( geometry, &errors, method, validityFlags );
 
   QObject::connect( &validator, &QgsGeometryValidator::errorFound, &validator, [ &errors ]( const QgsGeometry::Error & error )
