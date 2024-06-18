@@ -43,6 +43,7 @@
 #include "qgsalgorithmcentroid.h"
 #include "qgsalgorithmcheckgeometryangle.h"
 #include "qgsalgorithmcheckgeometryarea.h"
+#include "qgsalgorithmmergepolygons.h"
 #include "qgsalgorithmclip.h"
 #include "qgsalgorithmconcavehull.h"
 #include "qgsalgorithmconditionalbranch.h"
@@ -559,6 +560,7 @@ void QgsNativeAlgorithms::loadAlgorithms()
   addAlgorithm( new QgsDensifyGeometriesByIntervalAlgorithm() );
   addAlgorithm( new QgsDensifyGeometriesByCountAlgorithm() );
   addAlgorithm( new QgsDeleteVertexAlgorithm() );
+  addAlgorithm( new QgsMergePolygonsAlgorithm() );
 }
 
 ///@endcond

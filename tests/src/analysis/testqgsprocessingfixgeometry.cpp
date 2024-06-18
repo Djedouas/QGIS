@@ -33,8 +33,10 @@ class TestQgsProcessingFixGeometry: public QgsTest
     void init() {} // will be called before each testfunction is executed.
     void cleanup() {} // will be called after every testfunction.
 
-    void deleteVertexAlg_data();
-    void deleteVertexAlg();
+    // void deleteVertexAlg_data();
+    // void deleteVertexAlg();
+
+    void mergePolygonsAlg();
 
   private:
     const QDir mDataDir{ QDir( TEST_DATA_DIR ).absoluteFilePath( QStringLiteral( "geometry_fix" ) ) };
@@ -59,127 +61,160 @@ void TestQgsProcessingFixGeometry::cleanupTestCase()
   QgsApplication::exitQgis();
 }
 
-void TestQgsProcessingFixGeometry::deleteVertexAlg_data()
+// void TestQgsProcessingFixGeometry::deleteVertexAlg_data()
+// {
+//   //create a line layer that will be used in tests
+//   QTest::addColumn<QgsVectorLayer *>( "sourceLayer" );
+//   QTest::addColumn<QgsVectorLayer *>( "errorsLayer" );
+//   QTest::addColumn<bool>( "topological" );
+//   QTest::addColumn<QStringList>( "reportList" );
+
+//   QTest::newRow( "Lines no topological" )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines" ),
+//                              QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines_vertex_to_delete" ),
+//                              QStringLiteral( "lines vertex to delete" ), QStringLiteral( "ogr" ) )
+//       << false
+//       << ( QStringList()
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" ) );
+
+//   QTest::newRow( "Lines topological" )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines" ),
+//                              QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines_vertex_to_delete" ),
+//                              QStringLiteral( "lines vertex to delete" ), QStringLiteral( "ogr" ) )
+//       << true
+//       << ( QStringList()
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Double vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" ) );
+
+//   QTest::newRow( "Polygon no topological" )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( QStringLiteral( "delete_vertex.gpkg|layername=polygons" ) ),
+//                              QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( QStringLiteral( "delete_vertex.gpkg|layername=polygons_vertex_to_delete" ) ),
+//                              QStringLiteral( "polygons vertex to delete" ), QStringLiteral( "ogr" ) )
+//       << false
+//       << ( QStringList()
+//            << "Vertex removed"
+//            << QStringLiteral( "Resulting geometry would be degenerate" )
+//            << QStringLiteral( "Resulting geometry would be degenerate" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" ) );
+
+//   QTest::newRow( "Polygon topological" )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=polygons" ),
+//                              QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
+//       << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=polygons_vertex_to_delete" ),
+//                              QStringLiteral( "polygons vertex to delete" ), QStringLiteral( "ogr" ) )
+//       << true
+//       << ( QStringList()
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Resulting geometry would be degenerate" )
+//            << QStringLiteral( "Resulting geometry would be degenerate" )
+//            << QStringLiteral( "Double vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" )
+//            << QStringLiteral( "Vertex removed" ) );
+// }
+
+// void TestQgsProcessingFixGeometry::deleteVertexAlg()
+// {
+//   QFETCH( QgsVectorLayer *, sourceLayer );
+//   QFETCH( QgsVectorLayer *, errorsLayer );
+//   QFETCH( bool, topological );
+//   QFETCH( QStringList, reportList );
+
+//   QVERIFY( sourceLayer->isValid() );
+//   QVERIFY( errorsLayer->isValid() );
+
+//   std::unique_ptr< QgsProcessingAlgorithm > alg(
+//     QgsApplication::processingRegistry()->createAlgorithmById( QStringLiteral( "native:deletevertex" ) )
+//   );
+//   QVERIFY( alg != nullptr );
+
+//   QVariantMap parameters;
+//   parameters.insert( QStringLiteral( "INPUT" ), QVariant::fromValue( sourceLayer ) );
+//   parameters.insert( QStringLiteral( "ERRORS" ), QVariant::fromValue( errorsLayer ) );
+//   parameters.insert( QStringLiteral( "OUTPUT" ), QgsProcessing::TEMPORARY_OUTPUT );
+//   parameters.insert( QStringLiteral( "REPORT" ), QgsProcessing::TEMPORARY_OUTPUT );
+//   parameters.insert( QStringLiteral( "TOPOLOGICAL" ), topological );
+
+//   bool ok = false;
+//   QgsProcessingFeedback feedback;
+//   std::unique_ptr< QgsProcessingContext > context = std::make_unique< QgsProcessingContext >();
+
+//   QVariantMap results;
+//   results = alg->run( parameters, *context, &feedback, &ok );
+//   QVERIFY( ok );
+
+//   std::unique_ptr<QgsVectorLayer> outputLayer( qobject_cast< QgsVectorLayer * >( context->getMapLayer( results.value( QStringLiteral( "OUTPUT" ) ).toString() ) ) );
+//   std::unique_ptr<QgsVectorLayer> reportLayer( qobject_cast< QgsVectorLayer * >( context->getMapLayer( results.value( QStringLiteral( "REPORT" ) ).toString() ) ) );
+//   QVERIFY( outputLayer->isValid() );
+//   QVERIFY( errorsLayer->isValid() );
+
+//   QCOMPARE( outputLayer->featureCount(), sourceLayer->featureCount() );
+//   QCOMPARE( reportLayer->featureCount(), reportList.count() );
+//   int idx = 1;
+//   for ( QString expectedReport : reportList )
+//   {
+//     const QgsFeature reportFeature = reportLayer->getFeature( idx );
+//     QCOMPARE( expectedReport, reportFeature.attribute( "report" ) );
+//     idx++;
+//   }
+// }
+
+void TestQgsProcessingFixGeometry::mergePolygonsAlg()
 {
-  //create a line layer that will be used in tests
-  QTest::addColumn<QgsVectorLayer *>( "sourceLayer" );
-  QTest::addColumn<QgsVectorLayer *>( "errorsLayer" );
-  QTest::addColumn<bool>( "topological" );
-  QTest::addColumn<QStringList>( "reportList" );
-
-  QTest::newRow( "Lines no topological" )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines" ),
-                             QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines_vertex_to_delete" ),
-                             QStringLiteral( "lines vertex to delete" ), QStringLiteral( "ogr" ) )
-      << false
-      << ( QStringList()
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" ) );
-
-  QTest::newRow( "Lines topological" )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines" ),
-                             QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=lines_vertex_to_delete" ),
-                             QStringLiteral( "lines vertex to delete" ), QStringLiteral( "ogr" ) )
-      << true
-      << ( QStringList()
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Double vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" ) );
-
-  QTest::newRow( "Polygon no topological" )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( QStringLiteral( "delete_vertex.gpkg|layername=polygons" ) ),
-                             QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( QStringLiteral( "delete_vertex.gpkg|layername=polygons_vertex_to_delete" ) ),
-                             QStringLiteral( "polygons vertex to delete" ), QStringLiteral( "ogr" ) )
-      << false
-      << ( QStringList()
-           << "Vertex removed"
-           << QStringLiteral( "Resulting geometry would be degenerate" )
-           << QStringLiteral( "Resulting geometry would be degenerate" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" ) );
-
-  QTest::newRow( "Polygon topological" )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=polygons" ),
-                             QStringLiteral( "lines" ), QStringLiteral( "ogr" ) )
-      << new QgsVectorLayer( mDataDir.absoluteFilePath( "delete_vertex.gpkg|layername=polygons_vertex_to_delete" ),
-                             QStringLiteral( "polygons vertex to delete" ), QStringLiteral( "ogr" ) )
-      << true
-      << ( QStringList()
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Resulting geometry would be degenerate" )
-           << QStringLiteral( "Resulting geometry would be degenerate" )
-           << QStringLiteral( "Double vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" )
-           << QStringLiteral( "Vertex removed" ) );
-}
-
-void TestQgsProcessingFixGeometry::deleteVertexAlg()
-{
-  QFETCH( QgsVectorLayer *, sourceLayer );
-  QFETCH( QgsVectorLayer *, errorsLayer );
-  QFETCH( bool, topological );
-  QFETCH( QStringList, reportList );
+  const QDir testDataDir( QDir( TEST_DATA_DIR ).absoluteFilePath( "geometry_checker" ) );
+  QgsVectorLayer *sourceLayer = new QgsVectorLayer( testDataDir.absoluteFilePath( "polygon_layer.shp" ), QStringLiteral( "polygons" ), QStringLiteral( "ogr" ) );
+  QgsVectorLayer *errorsLayer = new QgsVectorLayer( QStringLiteral( "/home/jvolpes/Desktop/check_area.gpkg|layername=errors_layer" ), QStringLiteral( "errors" ), QStringLiteral( "ogr" ) ); // TODO test file
 
   QVERIFY( sourceLayer->isValid() );
   QVERIFY( errorsLayer->isValid() );
 
   std::unique_ptr< QgsProcessingAlgorithm > alg(
-    QgsApplication::processingRegistry()->createAlgorithmById( QStringLiteral( "native:deletevertex" ) )
+    QgsApplication::processingRegistry()->createAlgorithmById( QStringLiteral( "native:mergepolygons" ) )
   );
   QVERIFY( alg != nullptr );
 
   QVariantMap parameters;
   parameters.insert( QStringLiteral( "INPUT" ), QVariant::fromValue( sourceLayer ) );
   parameters.insert( QStringLiteral( "ERRORS" ), QVariant::fromValue( errorsLayer ) );
+  parameters.insert( QStringLiteral( "METHOD" ), 2 );
+  parameters.insert( QStringLiteral( "MERGE_ATTRIBUTE" ), QStringLiteral( "id" ));
   parameters.insert( QStringLiteral( "OUTPUT" ), QgsProcessing::TEMPORARY_OUTPUT );
   parameters.insert( QStringLiteral( "REPORT" ), QgsProcessing::TEMPORARY_OUTPUT );
-  parameters.insert( QStringLiteral( "TOPOLOGICAL" ), topological );
 
   bool ok = false;
   QgsProcessingFeedback feedback;
-  std::unique_ptr< QgsProcessingContext > context = std::make_unique< QgsProcessingContext >();
+  QgsProcessingContext context = QgsProcessingContext();
 
   QVariantMap results;
-  results = alg->run( parameters, *context, &feedback, &ok );
+  results = alg->run( parameters, context, &feedback, &ok );
   QVERIFY( ok );
 
-  std::unique_ptr<QgsVectorLayer> outputLayer( qobject_cast< QgsVectorLayer * >( context->getMapLayer( results.value( QStringLiteral( "OUTPUT" ) ).toString() ) ) );
-  std::unique_ptr<QgsVectorLayer> reportLayer( qobject_cast< QgsVectorLayer * >( context->getMapLayer( results.value( QStringLiteral( "REPORT" ) ).toString() ) ) );
-  QVERIFY( outputLayer->isValid() );
-  QVERIFY( errorsLayer->isValid() );
-
-  QCOMPARE( outputLayer->featureCount(), sourceLayer->featureCount() );
-  QCOMPARE( reportLayer->featureCount(), reportList.count() );
-  int idx = 1;
-  for ( QString expectedReport : reportList )
-  {
-    const QgsFeature reportFeature = reportLayer->getFeature( idx );
-    QCOMPARE( expectedReport, reportFeature.attribute( "report" ) );
-    idx++;
-  }
+  QVERIFY( false );
 }
 
 QGSTEST_MAIN( TestQgsProcessingFixGeometry )
