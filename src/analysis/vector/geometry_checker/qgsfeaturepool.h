@@ -185,6 +185,11 @@ class ANALYSIS_EXPORT QgsFeaturePool : public QgsFeatureSink SIP_ABSTRACT
     Qgis::GeometryType mGeometryType;
     std::unique_ptr<QgsVectorLayerFeatureSource> mFeatureSource;
     QString mLayerName;
+
+    // A memory layer is a cache by construction.
+    // We need to handle this specific type of layer without
+    // using mFeatureCache and mFeatureSource for getting features.
+    const bool mIsMemoryLayer;
 };
 
 #endif // QGS_FEATUREPOOL_H
