@@ -45,6 +45,7 @@
 #include "qgsalgorithmcheckgeometryangle.h"
 #include "qgsalgorithmcheckgeometryarea.h"
 #include "qgsalgorithmfixgeometryarea.h"
+#include "qgsalgorithmfixgeometryhole.h"
 #include "qgsalgorithmcheckgeometryhole.h"
 #include "qgsalgorithmclip.h"
 #include "qgsalgorithmconcavehull.h"
@@ -565,6 +566,7 @@ void QgsNativeAlgorithms::loadAlgorithms()
   addAlgorithm( new QgsDensifyGeometriesByCountAlgorithm() );
   addAlgorithm( new QgsFixGeometryAngleAlgorithm() );
   addAlgorithm( new QgsFixGeometryAreaAlgorithm() );
+  addAlgorithm( new QgsFixGeometryHoleAlgorithm() );
 }
 
 ///@endcond
