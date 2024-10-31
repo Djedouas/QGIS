@@ -189,6 +189,8 @@ class GUI_EXPORT QgsGraduatedSymbolRendererWidget : public QgsRendererWidget, pr
 
     void toggleMethodWidgets( MethodMode mode );
 
+    void minimumAndMaximumValue( QVariant &minVal, QVariant &maxVal, const QString &attrName );
+
     void clearParameterWidgets();
 
     std::unique_ptr< QgsGraduatedSymbolRenderer > mRenderer;

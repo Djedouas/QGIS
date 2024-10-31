@@ -253,7 +253,7 @@ This will calculate the classes for a given layer to define the classes.
    Use :py:func:`~QgsClassificationMethod.classesV2` instead.
 %End
 
-    QList<QgsClassificationRange> classesV2( const QgsVectorLayer *layer, const QString &expression, int nclasses, QString &error /Out/ );
+    QList<QgsClassificationRange> classesV2( const QgsVectorLayer *layer, const QString &expression, int nclasses, QString &error /Out/, double minimum, double maximum );
 %Docstring
 This will calculate the classes for a given layer to define the classes.
 

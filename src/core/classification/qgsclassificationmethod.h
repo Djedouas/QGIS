@@ -252,7 +252,7 @@ class CORE_EXPORT QgsClassificationMethod SIP_ABSTRACT
      *
      * \since QGIS 3.38
      */
-    QList<QgsClassificationRange> classesV2( const QgsVectorLayer *layer, const QString &expression, int nclasses, QString &error SIP_OUT );
+    QList<QgsClassificationRange> classesV2( const QgsVectorLayer *layer, const QString &expression, int nclasses, QString &error SIP_OUT, double minimum, double maximum );
 
     /**
      * This will calculate the classes for a list of values.

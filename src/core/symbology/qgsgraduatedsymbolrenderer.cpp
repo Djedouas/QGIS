@@ -429,7 +429,7 @@ QgsGraduatedSymbolRenderer *QgsGraduatedSymbolRenderer::createRenderer(
   r->setClassificationMethod( method );
 
   QString error;
-  r->updateClasses( vlayer, classes, error );
+  r->updateClasses( vlayer, classes, error, 0, 0 );
   ( void )error;
 
   return r;
@@ -448,17 +448,17 @@ void QgsGraduatedSymbolRenderer::updateClasses( QgsVectorLayer *vlayer, Mode mod
   setClassificationMethod( method );
 
   QString error;
-  updateClasses( vlayer, nclasses, error );
+  updateClasses( vlayer, nclasses, error, 0, 0 );
   ( void )error;
 }
 
-void QgsGraduatedSymbolRenderer::updateClasses( const QgsVectorLayer *vl, int nclasses, QString &error )
+void QgsGraduatedSymbolRenderer::updateClasses( const QgsVectorLayer *vl, int nclasses, QString &error, double minimum, double maximum )
 {
   Q_UNUSED( error )
   if ( mClassificationMethod->id() == QgsClassificationCustom::METHOD_ID )
     return;
 
-  QList<QgsClassificationRange> classes = mClassificationMethod->classesV2( vl, mAttrName, nclasses, error );
+  QList<QgsClassificationRange> classes = mClassificationMethod->classesV2( vl, mAttrName, nclasses, error, minimum, maximum );
 
   deleteAllClasses();
 

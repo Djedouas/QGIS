@@ -210,10 +210,10 @@ void QgsClassificationMethod::setParameterValues( const QVariantMap &values )
 QList<QgsClassificationRange> QgsClassificationMethod::classes( const QgsVectorLayer *layer, const QString &expression, int nclasses )
 {
   QString error;
-  return classesV2( layer, expression, nclasses, error );
+  return classesV2( layer, expression, nclasses, error, 0, 0 );
 }
 
-QList<QgsClassificationRange> QgsClassificationMethod::classesV2( const QgsVectorLayer *layer, const QString &expression, int nclasses, QString &error )
+QList<QgsClassificationRange> QgsClassificationMethod::classesV2( const QgsVectorLayer *layer, const QString &expression, int nclasses, QString &error, double minimum, double maximum )
 {
   if ( expression.isEmpty() )
     return QList<QgsClassificationRange>();
@@ -222,9 +222,6 @@ QList<QgsClassificationRange> QgsClassificationMethod::classesV2( const QgsVecto
     nclasses = 1;
 
   QList<double> values;
-  double minimum;
-  double maximum;
-
 
   int fieldIndex = layer->fields().indexFromName( expression );
 
@@ -239,14 +236,14 @@ QList<QgsClassificationRange> QgsClassificationMethod::classesV2( const QgsVecto
     minimum = *result.first;
     maximum = *result.second;
   }
-  else
-  {
-    QVariant minVal;
-    QVariant maxVal;
-    layer->minimumAndMaximumValue( fieldIndex, minVal, maxVal );
-    minimum = minVal.toDouble();
-    maximum = maxVal.toDouble();
-  }
+  // else
+  // {
+  //   QVariant minVal;
+  //   QVariant maxVal;
+  //   // layer->minimumAndMaximumValue( fieldIndex, minVal, maxVal );
+  //   minimum = minVal.toDouble();
+  //   maximum = maxVal.toDouble();
+  // }
 
   // get the breaks, minimum and maximum might be updated by implementation
   QList<double> breaks = calculateBreaks( minimum, maximum, values, nclasses, error );

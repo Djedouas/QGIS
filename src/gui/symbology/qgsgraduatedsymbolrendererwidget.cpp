@@ -1023,6 +1023,25 @@ void QgsGraduatedSymbolRendererWidget::classifyGraduated()
   mUpdateTimer.start( 500 );
 }
 
+void QgsGraduatedSymbolRendererWidget::minimumAndMaximumValue( QVariant &minVal, QVariant &maxVal, const QString &attrName )
+{
+  int attrNum = mLayer->fields().lookupField( attrName );
+  if ( mGroupBoxMinMax->isChecked() )
+  {
+    if ( mManualMinMaxRadioButton->isChecked() )
+    {
+      minVal = mManualMinDoubleSpinBox->value();
+      maxVal = mManualMaxDoubleSpinBox->value();
+    }
+    // else if ( mCumulativeCutRadioButton->isChecked() )
+    // {
+    //
+    // }
+  }
+  else
+    mLayer->minimumAndMaximumValue( attrNum, minVal, maxVal );
+}
+
 void QgsGraduatedSymbolRendererWidget::classifyGraduatedImpl( )
 {
 
@@ -1037,15 +1056,14 @@ void QgsGraduatedSymbolRendererWidget::classifyGraduatedImpl( )
   QgsClassificationMethod *method = QgsApplication::classificationMethodRegistry()->method( methodId );
   Q_ASSERT( method );
 
-  int attrNum = mLayer->fields().lookupField( attrName );
-
   QVariant minVal;
   QVariant maxVal;
-  mLayer->minimumAndMaximumValue( attrNum, minVal, maxVal );
+  minimumAndMaximumValue( minVal, maxVal, attrName );
 
   double minimum = minVal.toDouble();
   double maximum = maxVal.toDouble();
   mSymmetryPointValidator->setBottom( minimum );
+  qDebug() << "minimum: " << minimum << " ; maximum: " << maximum;
   mSymmetryPointValidator->setTop( maximum );
   mSymmetryPointValidator->setMaxDecimals( spinPrecision->value() );
 
@@ -1103,7 +1121,7 @@ void QgsGraduatedSymbolRendererWidget::classifyGraduatedImpl( )
   }
 
   QString error;
-  mRenderer->updateClasses( mLayer, nclasses, error );
+  mRenderer->updateClasses( mLayer, nclasses, error, minimum, maximum );
 
   if ( !error.isEmpty() )
     QMessageBox::critical( this, tr( "Apply Classification" ), error );
