@@ -54,8 +54,8 @@ class TestQgsAdvancedDigitizing: public QObject
 
     void cadPointList();
     void lockedSnapVertices();
-    void currentPointWhenSanpping();
-    void currentPointWhenSanppingWithDiffCanvasCRS();
+    void currentPointWhenSnapping();
+    void currentPointWhenSnappingWithDiffCanvasCRS();
 
     void releaseLockAfterDisable();
 
@@ -1007,7 +1007,7 @@ void TestQgsAdvancedDigitizing::lockedSnapVertices()
   QCOMPARE( mAdvancedDigitizingDockWidget->lockedSnapVertices().size(), 0 );
 }
 
-void TestQgsAdvancedDigitizing::currentPointWhenSanpping()
+void TestQgsAdvancedDigitizing::currentPointWhenSnapping()
 {
   auto utils = getMapToolDigitizingUtils( mLayer3950 );
 
@@ -1045,7 +1045,7 @@ void TestQgsAdvancedDigitizing::currentPointWhenSanpping()
   utils.mouseClick( 30, 0, Qt::RightButton );
 }
 
-void TestQgsAdvancedDigitizing::currentPointWhenSanppingWithDiffCanvasCRS()
+void TestQgsAdvancedDigitizing::currentPointWhenSnappingWithDiffCanvasCRS()
 {
   auto utils = getMapToolDigitizingUtils( mLayer4326 );
 
@@ -1066,6 +1066,16 @@ void TestQgsAdvancedDigitizing::currentPointWhenSanppingWithDiffCanvasCRS()
   QgsSnappingConfig snapConfig = mCanvas->snappingUtils()->config();
   snapConfig.setEnabled( true );
   mCanvas->snappingUtils()->setConfig( snapConfig );
+
+  // move to trigger a re-indexing and wait for it to complete
+  utils.mouseMove( 0, 0 );
+  if ( QgsPointLocator *loc = mCanvas->snappingUtils()->locatorForLayer( mLayer4326 ) )
+  {
+    if ( loc->isIndexing() )
+    {
+      loc->waitForIndexingFinished();
+    }
+  }
 
   QCOMPARE( mCanvas->snappingUtils()->currentLayer(), mLayer4326 );
 
