@@ -37,6 +37,8 @@ class APP_EXPORT QgsMapToolDistributeFeature : public QgsMapToolAdvancedDigitizi
 
     void cadCanvasReleaseEvent( QgsMapMouseEvent *e ) override;
 
+    void keyPressEvent( QKeyEvent *e ) override;
+
     void deactivate() override;
 
     void activate() override;
@@ -53,6 +55,9 @@ class APP_EXPORT QgsMapToolDistributeFeature : public QgsMapToolAdvancedDigitizi
 
     //! The reference line geometry
     QgsGeometry mReferenceLineGeom;
+
+    //! The layer of the reference line geometry
+    QgsVectorLayer *mRefLayer;
 
     //! The number of features to distribute
     int mFeatureNb = 4;
@@ -71,6 +76,8 @@ class APP_EXPORT QgsMapToolDistributeFeature : public QgsMapToolAdvancedDigitizi
     void createFeaturesRubberBandGeometry( Qgis::GeometryType geometryType );
 
     void createReferenceRubberband( QgsPointLocator::Match match );
+
+    void updateReferenceRubberband();
 };
 
 #endif

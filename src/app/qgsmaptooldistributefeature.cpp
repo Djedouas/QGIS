@@ -34,6 +34,7 @@ QgsMapToolDistributeFeature::QgsMapToolDistributeFeature( QgsMapCanvas *canvas )
   : QgsMapToolAdvancedDigitizing( canvas, QgisApp::instance()->cadDockWidget() )
 {
   mToolName = tr( "Copy and distribute feature" );
+  connect( mCanvas, &QgsMapCanvas::extentsChanged, this, &QgsMapToolDistributeFeature::updateReferenceRubberband );
 }
 
 QgsMapToolDistributeFeature::~QgsMapToolDistributeFeature()
@@ -80,10 +81,27 @@ void QgsMapToolDistributeFeature::cadCanvasMoveEvent( QgsMapMouseEvent *e )
   }
 }
 
+void QgsMapToolDistributeFeature::keyPressEvent( QKeyEvent *e )
+{
+  if ( e && e->isAutoRepeat() )
+  {
+    return;
+  }
+
+  if ( e->key() == Qt::Key_Escape )
+  {
+    deleteRubberbands();
+    return;
+  }
+}
+
 void QgsMapToolDistributeFeature::cadCanvasReleaseEvent( QgsMapMouseEvent *e )
 {
-  if ( e->button() != Qt::LeftButton )
+  if ( e->button() == Qt::RightButton )
+  {
+    deleteRubberbands();
     return;
+  }
 
   QgsVectorLayer *vlayer = currentVectorLayer();
   if ( !vlayer || !vlayer->isEditable() )
@@ -179,6 +197,7 @@ void QgsMapToolDistributeFeature::deleteRubberbands()
 {
   mFeaturesRubberBand.reset();
   mReferenceLineRubberBand.reset();
+  mRefLayer = nullptr;
 }
 
 void QgsMapToolDistributeFeature::createFeaturesRubberBandGeometry( Qgis::GeometryType geometryType )
@@ -203,17 +222,28 @@ void QgsMapToolDistributeFeature::createReferenceRubberband( QgsPointLocator::Ma
     return;
   }
 
-  QgsVectorLayer *refLayer = match.layer();
+  mRefLayer = match.layer();
   QgsPointXY p1, p2;
   match.edgePoints( p1, p2 );
-  mReferenceLineRubberBand.reset( createRubberBand() );
+  mReferenceLineRubberBand.reset( createRubberBand( Qgis::GeometryType::Line, true ) );
+  mReferenceLineRubberBand->addPoint( p1 );
+  mReferenceLineRubberBand->addPoint( p2 );
+  updateReferenceRubberband();
+}
+
+void QgsMapToolDistributeFeature::updateReferenceRubberband()
+{
+  if ( !mReferenceLineRubberBand || !mRefLayer )
+    return;
 
   // Compute intersection between the line that extends the limit segment and the
   // edges of the map canvas
-  QgsPoint canvasTopLeft = QgsPoint( toLayerCoordinates( refLayer, QPoint( 0, 0 ) ) );
-  QgsPoint canvasTopRight = QgsPoint( toLayerCoordinates( refLayer, QPoint( mCanvas->width(), 0 ) ) );
-  QgsPoint canvasBottomLeft = QgsPoint( toLayerCoordinates( refLayer, QPoint( 0, mCanvas->height() ) ) );
-  QgsPoint canvasBottomRight = QgsPoint( toLayerCoordinates( refLayer, QPoint( mCanvas->width(), mCanvas->height() ) ) );
+  QgsPointXY p1 = toLayerCoordinates( mRefLayer, *mReferenceLineRubberBand->getPoint( 0, 0 ) );
+  QgsPointXY p2 = toLayerCoordinates( mRefLayer, *mReferenceLineRubberBand->getPoint( 0, 1 ) );
+  QgsPoint canvasTopLeft = QgsPoint( toLayerCoordinates( mRefLayer, QPoint( 0, 0 ) ) );
+  QgsPoint canvasTopRight = QgsPoint( toLayerCoordinates( mRefLayer, QPoint( mCanvas->width(), 0 ) ) );
+  QgsPoint canvasBottomLeft = QgsPoint( toLayerCoordinates( mRefLayer, QPoint( 0, mCanvas->height() ) ) );
+  QgsPoint canvasBottomRight = QgsPoint( toLayerCoordinates( mRefLayer, QPoint( mCanvas->width(), mCanvas->height() ) ) );
 
   QList<QgsPointXY> points;
   points << p1 << p2;
@@ -254,6 +284,6 @@ void QgsMapToolDistributeFeature::createReferenceRubberband( QgsPointLocator::Ma
   // Densify the polyline to display a more accurate prediction when layer crs != canvas crs
   QgsGeometry geom = QgsGeometry::fromPolylineXY( polyline ).densifyByCount( 10 );
 
-  mReferenceLineRubberBand->setToGeometry( geom, refLayer );
+  mReferenceLineRubberBand->setToGeometry( geom, mRefLayer );
   mReferenceLineRubberBand->show();
 }
